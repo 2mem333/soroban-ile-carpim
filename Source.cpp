@@ -3,7 +3,7 @@
 #include <vector>
 #include "sfml_lib.h"
 #include <string>
-
+//76,81
 using namespace sf;
 int cerceve_yatay = 600;
 int cerceve_dikey = 250;
@@ -39,7 +39,7 @@ sf::Text createText(const std::string& content, float x, float y, int size, sf::
     text.setCharacterSize(size);
     text.setFillColor(color);
 
-    // Doðrudan verilen konuma yerleþtir
+    // DoÄŸrudan verilen konuma yerleÅŸtir
     text.setPosition(x, y);
     return text;
 }
@@ -63,7 +63,7 @@ void boncukdurumuguncelle(int cubuk, int sira, bool durum)
         boncuklar[cubuk][sira].setFillColor(Color(192, 192, 192));
     }
     else {
-        boncuklar[cubuk][sira].setPosition(pos.x, pos.y + uzaklik); //bi üstüne cikarir.
+        boncuklar[cubuk][sira].setPosition(pos.x, pos.y + uzaklik); //bi Ã¼stÃ¼ne cikarir.
         boncuklar[cubuk][sira].setFillColor(Color(128, 128, 128));
     }
 }
@@ -189,7 +189,7 @@ public:
         newMove.olay = olay;
         newMove.olay2 = olay2;
         for (int i = 0; i < 13; ++i) {
-            newMove.degerler[i] = cubukdegeri(i);  // Örnek olarak her elemaný 2 ile çarpýyoruz
+            newMove.degerler[i] = cubukdegeri(i);  // Ã–rnek olarak her elemanÄ± 2 ile Ã§arpÄ±yoruz
         }
         moveQueue.push_back(newMove); //boncuklarin oynama durumunu kaydet.
     }
@@ -206,9 +206,19 @@ public:
             if (9 - cubukdegeri(cubuk) < sayi) //bu sayi bu cubukta tasma yapiyor!
             {
                 sayi = 10 - sayi; //geri odenecek borc
-                //bi soldaki cubuktan oynama yapilip, mevcut cubuk eksiltilir.
+                //bir soldaki cubuktan oynama yapilip, mevcut cubuk eksiltilir.
                 for (int t = 1; t < 13; t++)
                 {
+                    if (cubukdegeri(cubuk + 1) < sayi) //iki sonraki cubuktan borc alicaz
+                    {
+                        if (dizi[cubuk + 2][t] == 0)
+                        {
+                            sayi = sayi + 100; //odenecek borc artti.
+                            olay2 = std::to_string(cubuk + 3) + ". cubuktan 1 alt boncuk borc alindi, fazladan " + std::to_string(sayi) + " boncuk odenecek.";
+                            recordMove(cubuk + 2, t, 1);
+                            break;
+                        }
+                    }
                     if (dizi[cubuk + 1][t] == 0)
                     {
                         olay2 = std::to_string(cubuk + 2) + ". cubuktan 1 alt boncuk borc alindi, fazladan " + std::to_string(sayi) + " boncuk odenecek.";
@@ -238,7 +248,7 @@ public:
                         }
                     }
                     else {
-                        int ind = 4; //azaltmaya en dýþtan baþlar
+                        int ind = 4; //azaltmaya en dÄ±ÅŸtan baÅŸlar
                         int t = 0;
                         while (t < sayi)
                         {
@@ -462,8 +472,8 @@ int main()
                 }
                 if (button[1].getGlobalBounds().contains(mousePos))
                 {
-                    if (lastMove.cubuk != 0) {  // lastMove'un geçerli bir deðer olup olmadýðýný kontrol et
-                        moveQueue.push_back(lastMove);  // Son hareketi vektöre ekle (geri hamle)
+                    if (lastMove.cubuk != 0) {  // lastMove'un geÃ§erli bir deÄŸer olup olmadÄ±ÄŸÄ±nÄ± kontrol et
+                        moveQueue.push_back(lastMove);  // Son hareketi vektÃ¶re ekle (geri hamle)
 
                         if(!lastMove.durum)
                          boncukdurumuguncelle(lastMove.cubuk, lastMove.boncuk, 1);
@@ -477,7 +487,7 @@ int main()
 
                         for (int i = 0; i < 13; i++) {
                             int sayi = lastMove.degerler[i];
-                            degerler[12 - i].setString(std::to_string(sayi));  // Deðerleri geri al
+                            degerler[12 - i].setString(std::to_string(sayi));  // DeÄŸerleri geri al
                         }
                     }
                 }
