@@ -205,28 +205,40 @@ public:
 
             if (9 - cubukdegeri(cubuk) < sayi) //bu sayi bu cubukta tasma yapiyor!
             {
-                sayi = 10 - sayi; //geri odenecek borc
-                //bir soldaki cubuktan oynama yapilip, mevcut cubuk eksiltilir.
-                for (int t = 1; t < 13; t++)
-                {
-                    if (cubukdegeri(cubuk + 1) < sayi) //iki sonraki cubuktan borc alicaz
+                //sayi = 10 - sayi; //geri odenecek borc
+                //bir soldaki cubuk 1 arttirlip, mevcut cubuk eksiltilir.
+
+                    int borcalinacakcubuk = cubuk + 1;
+                    if (alt_cubukdegeri(borcalinacakcubuk) == 4) //sayi alt cubuklarla gosterilemez.
                     {
-                        if (dizi[cubuk + 2][t] == 0)
+                        olay2 = std::to_string(borcalinacakcubuk + 2) + ". cubuktan 1 ust boncuk arttirildi, alt boncuk azaltilcak";
+                        recordMove(borcalinacakcubuk, 0, 1);
+
+                        int ind = 4; //azaltmaya en dıştan başlar
+                        int t = 0;
+                        while (t < 4)
                         {
-                            sayi = sayi + 100; //odenecek borc artti.
-                            olay2 = std::to_string(cubuk + 3) + ". cubuktan 1 alt boncuk borc alindi, fazladan " + std::to_string(sayi) + " boncuk odenecek.";
-                            recordMove(cubuk + 2, t, 1);
-                            break;
+                            if (dizi[borcalinacakcubuk][ind]) {
+                                t++;
+                                olay2 = std::to_string(borcalinacakcubuk + 1) + ". cubugun alt boncugu 1 azaltildi.";
+                                recordMove(borcalinacakcubuk, ind, 0);
+                            }
+                            ind--;
+                        }
+
+                    }
+                    else {
+                        for (int t = 1; t < 5; t++) {
+                            if (dizi[borcalinacakcubuk][t] == 0)
+                            {
+                                olay2 = std::to_string(borcalinacakcubuk + 2) + ". cubuktan 1 alt boncuk borc alindi, fazladan " + std::to_string(sayi) + " boncuk odenecek.";
+                                recordMove(borcalinacakcubuk, t, 1);
+                                break;
+                            }
                         }
                     }
-                    if (dizi[cubuk + 1][t] == 0)
-                    {
-                        olay2 = std::to_string(cubuk + 2) + ". cubuktan 1 alt boncuk borc alindi, fazladan " + std::to_string(sayi) + " boncuk odenecek.";
-                        recordMove(cubuk + 1, t, 1);
-                        break;
-                    }
-                }
 
+                sayi = 10 - sayi; //geri odenecek borc
                 if (sayi < 5)
                 {
                     if (sayi > alt_cubukdegeri(cubuk)) //eger sayi alt cubuklardan borcu odeyemiyorsak
