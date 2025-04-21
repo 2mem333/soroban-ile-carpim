@@ -18,7 +18,7 @@ int _sayi1;
 int _sayi2;
 bool sayilargirildi = false;
 //****************************
-struct Move {
+struct Move {  //boncugun durumunu kaydetmek icin yapi
     int cubuk;
     int boncuk;
     int durum;
@@ -171,8 +171,8 @@ public:
         }
         boncukdurumuguncelle(cubuk, boncuk, durum);
     }
-
-    void recordMove(int cubuk, int boncuk, int durum) //boncuklarin oynama durumunu duzenle ve kaydet.
+    //ilk parametre cubuk, ikincisi boncuk {0} en ust olmak uzere alt cubuklar {4,3,2,1}, durum parametresi 0 ise kaldır, 1 ise ekle.
+    void hareketi_kaydet(int cubuk, int boncuk, int durum) //boncuklarin oynama durumunu duzenle ve kaydet, grafiksel bicimde gosterebilmek icin
     {
         if (dizi[cubuk][boncuk] == durum)
             dizi[cubuk][boncuk] = durum;
@@ -194,7 +194,7 @@ public:
         moveQueue.push_back(newMove); //boncuklarin oynama durumunu kaydet.
     }
 
-    void cc(int carpim, int c1, int c2)
+    void capma_algoritmasi(int carpim, int c1, int c2)
     {
         for (int cubuk = c1; cubuk <= c2; cubuk++)
         {
@@ -203,16 +203,15 @@ public:
             if (sayi == 0)
                 continue;
 
-            if (9 - cubukdegeri(cubuk) < sayi) //bu sayi bu cubukta tasma yapiyor!
+            if (9 - cubukdegeri(cubuk) < sayi) //boncuklar yetersiz!
             {
-                //sayi = 10 - sayi; //geri odenecek borc
                 //bir soldaki cubuk 1 arttirlip, mevcut cubuk eksiltilir.
 
                     int borcalinacakcubuk = cubuk + 1;
-                    if (alt_cubukdegeri(borcalinacakcubuk) == 4) //sayi alt cubuklarla gosterilemez.
+                    if (alt_cubukdegeri(borcalinacakcubuk) == 4) //sayi alt cubuklarla gosterilemez, ust cubukla gosterilmeli
                     {
                         olay2 = std::to_string(borcalinacakcubuk + 2) + ". cubuktan 1 ust boncuk arttirildi, alt boncuk azaltilcak";
-                        recordMove(borcalinacakcubuk, 0, 1);
+                        hareketi_kaydet(borcalinacakcubuk, 0, 1);
 
                         int ind = 4; //azaltmaya en dıştan başlar
                         int t = 0;
@@ -221,7 +220,7 @@ public:
                             if (dizi[borcalinacakcubuk][ind]) {
                                 t++;
                                 olay2 = std::to_string(borcalinacakcubuk + 1) + ". cubugun alt boncugu 1 azaltildi.";
-                                recordMove(borcalinacakcubuk, ind, 0);
+                                hareketi_kaydet(borcalinacakcubuk, ind, 0);
                             }
                             ind--;
                         }
@@ -232,7 +231,7 @@ public:
                             if (dizi[borcalinacakcubuk][t] == 0)
                             {
                                 olay2 = std::to_string(borcalinacakcubuk + 2) + ". cubuktan 1 alt boncuk borc alindi, fazladan " + std::to_string(sayi) + " boncuk odenecek.";
-                                recordMove(borcalinacakcubuk, t, 1);
+                                hareketi_kaydet(borcalinacakcubuk, t, 1);
                                 break;
                             }
                         }
@@ -244,7 +243,7 @@ public:
                     if (sayi > alt_cubukdegeri(cubuk)) //eger sayi alt cubuklardan borcu odeyemiyorsak
                     {
                         olay2 = "Borc odeniyor, " + std::to_string(cubuk) + ". cubugun ust boncugu 1 azaltildi.";
-                        recordMove(cubuk, 0, 0);
+                        hareketi_kaydet(cubuk, 0, 0);
                         sayi = 5 - sayi;
                         //fazla verilenleri geri alicaz simdi
                         int ind = 1;
@@ -254,7 +253,7 @@ public:
                             if (!(dizi[cubuk][ind])) {
                                 t++;
                                 olay2 = std::to_string(cubuk + 1) + ". cubugun alt boncugu 1 arttirildi.";
-                                recordMove(cubuk, ind, 1);
+                                hareketi_kaydet(cubuk, ind, 1);
                             }
                             ind++;
                         }
@@ -267,7 +266,7 @@ public:
                             if (dizi[cubuk][ind]) {
                                 t++;
                                 olay2 = std::to_string(cubuk + 1) + ". cubugun alt boncugu 1 azaltildi.";
-                                recordMove(cubuk, ind, 0);
+                                hareketi_kaydet(cubuk, ind, 0);
                             }
                             ind--;
                         }
@@ -276,7 +275,7 @@ public:
                 else
                 {
                     olay2 = std::to_string(cubuk + 1) + ". cubugun ust boncugu 1 azaltildi.";
-                    recordMove(cubuk, 0, 0);
+                    hareketi_kaydet(cubuk, 0, 0);
                     int ind = 4;
                     int t = 0;
                     while (t < sayi - 5)
@@ -284,22 +283,22 @@ public:
                         if (dizi[cubuk][ind]) {
                             t++;
                             olay2 = std::to_string(cubuk + 1) + ". cubugun alt boncugu 1 azaltildi.";
-                            recordMove(cubuk, ind, 0);
+                            hareketi_kaydet(cubuk, ind, 0);
                         }
                         ind--;
                     }
                 }
             }
-            else
+            else //tasma yapmıyor.
             {
                 //sayi kadar deger cubuga eklenecek!.
-                if (sayi < 5) //buraya bi kontrol lazim, eger 5'den kucukse fakat alttaki cubuklarla gosterilemiyorsa
+                if (sayi < 5) 
                 {
                     if (sayi > 4 - alt_cubukdegeri(cubuk)) //eger sayi alt cubuklarda tasma yapiyorsa ustten borc al alttan dusur.
                     {
                         sayi = 5 - sayi;
                         olay2 = std::to_string(cubuk + 1) + ". cubugun ust boncugu arttirildi, fazladan " + std::to_string(sayi) + " kadar boncuk alttan azaltilacak";
-                        recordMove(cubuk, 0, 1);
+                        hareketi_kaydet(cubuk, 0, 1);
                         int ind = 4;
                         int t = 0;
                         while (t < sayi)
@@ -307,7 +306,7 @@ public:
                             if ((dizi[cubuk][ind]) == 1) {
                                 t++;
                                 olay2 = std::to_string(cubuk + 1) + ". cubugun alt boncugu 1 azaltildi.";
-                                recordMove(cubuk, ind, 0); //aldigimiz borcu oderiz
+                                hareketi_kaydet(cubuk, ind, 0); //aldigimiz borcu oderiz
                             }
                             ind--;
                         }
@@ -320,7 +319,7 @@ public:
                             if (!(dizi[cubuk][ind])) {
                                 t++;
                                 olay2 = std::to_string(cubuk + 1) + ". cubugun alt boncugu 1 arttirildi.";
-                                recordMove(cubuk, ind, 1);
+                                hareketi_kaydet(cubuk, ind, 1);
                             }
                             ind++;
                         }
@@ -329,7 +328,7 @@ public:
                 else
                 {
                     olay2 = std::to_string(cubuk + 1) + ". cubugun ust boncugu arttirildi.";
-                    recordMove(cubuk, 0, 1);
+                    hareketi_kaydet(cubuk, 0, 1);
                     int ind = 1;
                     int t = 0;
                     while (t < sayi - 5)
@@ -337,7 +336,7 @@ public:
                         if (!(dizi[cubuk][ind])) {
                             t++;
                             olay2 = std::to_string(cubuk + 1) + ". cubugun alt boncugu 1 arttirildi.";
-                            recordMove(cubuk, ind, 1);
+                            hareketi_kaydet(cubuk, ind, 1);
                         }
                         ind++;
                     }
@@ -363,7 +362,7 @@ public:
                 std::cout << "|" << b1 + b2 - 2 << "," << b1 + b2 - 1 << "|\n";
                 olay = std::to_string(rakam2) + " ile " + std::to_string(rakam1) + " carpiliyor = " + std::to_string(rakam1*rakam2) + " eklenecek, ";
                 olay = olay + std::to_string(b1 + b2 - 1) + ". ile " + std::to_string(b1 + b2) + ". cubuklar kullanilacak.";
-                cc(carpim, b1 + b2 - 2, b1 + b2 - 1);
+                capma_algoritmasi(carpim, b1 + b2 - 2, b1 + b2 - 1);
             }
         }
         printf("Cevap: %d", sayi1 * sayi2);
@@ -374,6 +373,7 @@ int main()
 {
     soroban s;
     int x = true;
+    // GUI KODLARI BASLANGIC
     sf::RenderWindow window(sf::VideoMode(800, 600), "Soroban");
 
     sf::Font font;
@@ -409,7 +409,6 @@ int main()
         degerler[i] = createText("0", 125 + cubuk_arasi * i, 30, 30, sf::Color::Black, font);
     }
     sf::Text butonyazi = createText("ileri", 690, 510, 20, sf::Color::Black, font);
-    sf::Text butonyazi2 = createText("geri", 690, 550, 20, sf::Color::Black, font);
 
     sf::Text yazi1 = createText("", 70, 360, 20, sf::Color::Black, font);
     sf::Text yazi2 = createText("", 70, 390, 20, sf::Color::Black, font);
@@ -436,10 +435,7 @@ int main()
     button[0].setSize(sf::Vector2f(100, 25));
     button[0].setFillColor(sf::Color::White);
     button[0].setPosition(680, 510);
-
-    button[1].setSize(sf::Vector2f(100, 25));
-    button[1].setFillColor(sf::Color::White);
-    button[1].setPosition(680, 550);
+    // GUI KODLARI BITIS
 
     while (window.isOpen())
     {
@@ -457,8 +453,8 @@ int main()
 
             if (event.type == sf::Event::Closed)
                 window.close();
-
-            if (event.type == sf::Event::MouseButtonPressed)
+            //sırasıyla kaydedilen hamleleri geri ceker.
+            if (event.type == sf::Event::MouseButtonPressed) 
             {
                 sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
                 if (button[0].getGlobalBounds().contains(mousePos))
@@ -482,29 +478,9 @@ int main()
                         yazi2.setString("");
                     }
                 }
-                if (button[1].getGlobalBounds().contains(mousePos))
-                {
-                    if (lastMove.cubuk != 0) {  // lastMove'un geçerli bir değer olup olmadığını kontrol et
-                        moveQueue.push_back(lastMove);  // Son hareketi vektöre ekle (geri hamle)
-
-                        if(!lastMove.durum)
-                         boncukdurumuguncelle(lastMove.cubuk, lastMove.boncuk, 1);
-                        else
-                            boncukdurumuguncelle(lastMove.cubuk, lastMove.boncuk, 0);
-
-                        std::cout << "\n" << lastMove.olay << "\n" << lastMove.olay2;
-
-                        yazi1.setString(lastMove.olay);
-                        yazi2.setString(lastMove.olay2);
-
-                        for (int i = 0; i < 13; i++) {
-                            int sayi = lastMove.degerler[i];
-                            degerler[12 - i].setString(std::to_string(sayi));  // Değerleri geri al
-                        }
-                    }
-                }
             }
 
+            //algoritma bu kodda calisir ve boncuk durumları kaydedilir.
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
                 system("cls");
                 s.sifirla();
@@ -527,6 +503,7 @@ int main()
             }
         }
 
+        //GUI KODLARI BASLANGIC
         window.clear(sf::Color(245, 222, 179));
 
         for (int i = 1; i < cubuksayisi + 1; ++i) {
@@ -542,7 +519,6 @@ int main()
                 window.draw(boncuklar[i][a]);
 
         window.draw(button[0]);
-        window.draw(button[1]);
         textBox1.draw(window);
         textBox2.draw(window);
         window.draw(yazi1);
@@ -550,7 +526,6 @@ int main()
         window.draw(islem1);
         window.draw(islem2);
         window.draw(butonyazi);
-        window.draw(butonyazi2);
 
         for (int i = 0; i < 13; i++)
             window.draw(degerler[i]);
@@ -558,6 +533,6 @@ int main()
         window.display();
         sf::sleep(sf::milliseconds(100));
     }
-
+    //GUI KODLARI btis
     return 0;
 }
